@@ -86,7 +86,15 @@ public final class ProviderEnvironment {
     @SuppressWarnings({ "Convert2Lambda", "Anonymous2MethodRef" })
     static final Supplier<AuthenticationContext> DEFAULT_AUTH_CTXT_SUPPLIER = new Supplier<AuthenticationContext>() {
         public AuthenticationContext get() {
-            return AuthenticationContext.captureCurrent();
+            AuthenticationContext ac = AuthenticationContext.getContextManager().getClassLoaderDefault(Thread.currentThread().getContextClassLoader());
+
+            AuthenticationContext current = AuthenticationContext.captureCurrent();
+
+            if (ac != null && current != null) {
+                return current.with(ac);
+            } else {
+                return current;
+            }
         }
     };
 
